@@ -3,22 +3,18 @@
 
     <record id="partner_alice_martin" model="res.partner">
         <field name="name">Alice Martin</field>
-        <field name="company_type">person</field>
     </record>
 
     <record id="partner_bob_chen" model="res.partner">
         <field name="name">Bob Chen</field>
-        <field name="company_type">person</field>
     </record>
 
     <record id="partner_sarah_kovacs" model="res.partner">
         <field name="name">Sarah Kovacs</field>
-        <field name="company_type">person</field>
     </record>
 
     <record id="partner_marc_dupont" model="res.partner">
         <field name="name">Marc Dupont</field>
-        <field name="company_type">person</field>
     </record>
 
     <record id="session_01" model="conference.session">
