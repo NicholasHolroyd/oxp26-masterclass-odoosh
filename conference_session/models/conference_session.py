@@ -19,12 +19,13 @@ class ConferenceSession(models.Model):
         compute='_compute_room_session_count',
     )
 
+    @api.depends('room')
     def _compute_room_session_count(self):
+        counts = dict(self._read_group(
+            [], groupby=['room'], aggregates=['__count'],
+        ))
         for session in self:
-            # deliberately slow: fires one SQL query per record
-            session.room_session_count = self.search_count(
-                [('room', '=', session.room)]
-            )
+            session.room_session_count = counts.get(session.room, 0)
 
     # ── populate (odoo-bin populate --size=medium --models=conference.session) ──
 
