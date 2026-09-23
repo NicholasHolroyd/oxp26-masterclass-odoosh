@@ -5,13 +5,13 @@
         <field name="name">conference.session.tree</field>
         <field name="model">conference.session</field>
         <field name="arch" type="xml">
-            <tree string="Sessions">
+            <list string="Sessions">
                 <field name="date"/>
                 <field name="name"/>
-                <field name="speaker"/>
+                <field name="presenter_id"/>
                 <field name="duration"/>
                 <field name="room"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -24,7 +24,7 @@
                     <group>
                         <group>
                             <field name="name"/>
-                            <field name="speaker"/>
+                            <field name="presenter_id"/>
                             <field name="date"/>
                         </group>
                         <group>
@@ -41,7 +41,7 @@
     <record id="action_conference_session" model="ir.actions.act_window">
         <field name="name">Sessions</field>
         <field name="res_model">conference.session</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
     <menuitem id="menu_conference_root"
