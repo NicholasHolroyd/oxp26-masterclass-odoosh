@@ -1,4 +1,4 @@
-from odoo import fields, models
+from odoo import fields, models,api
 
 
 class ConferenceSession(models.Model):
@@ -12,3 +12,8 @@ class ConferenceSession(models.Model):
     room = fields.Char(string='Room')
     notes = fields.Text(string='Notes')
     date = fields.Date(string='Date')
+
+    @api.depends('duration')
+    def _compute_duration_in_hours(self):
+        for session in self:
+            session.duration_in_hours = session.duration / 60.0
