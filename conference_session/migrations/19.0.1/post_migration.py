@@ -1,35 +1,30 @@
 from odoo.upgrade import util
 
 
-def migrate(cr, version):
-    # ORM has run: presenter_id column exists (NULL), speaker column still
-    # holds the old names.
+def _column_exists(cr, table, column):
     cr.execute("""
-        SELECT id, speaker FROM conference_session
-        WHERE speaker IS NOT NULL AND speaker != ''
+        SELECT 1 FROM information_schema.columns
+        WHERE table_name = %s AND column_name = %s
+    """, (table, column))
+    return cr.fetchone() is not None
+
+
+def migrate(cr, version):
+    # presenter_id now exists (added by the ORM). Copy over what
+    # pre_migration resolved from the old speaker names, then drop the
+    # scratch column.
+    cr.execute("""
+        UPDATE conference_session
+        SET presenter_id = _migrate_presenter_id
+        WHERE _migrate_presenter_id IS NOT NULL
     """)
-    sessions = cr.fetchall()
+    cr.execute("ALTER TABLE conference_session DROP COLUMN _migrate_presenter_id")
 
-    for session_id, speaker_name in sessions:
-        cr.execute(
-            "SELECT id FROM res_partner WHERE name = %s AND active = true LIMIT 1",
-            (speaker_name,),
-        )
-        row = cr.fetchone()
-        if row:
-            partner_id = row[0]
-        else:
-            cr.execute(
-                "INSERT INTO res_partner (name, active, company_type) VALUES (%s, true, 'person') RETURNING id",
-                (speaker_name,),
-            )
-            partner_id = cr.fetchone()[0]
+    # speaker was already read in pre_migration; only clean it up here if it
+    # is still around (defensive against a partial/previous run).
+    if _column_exists(cr, 'conference_session', 'speaker'):
+        util.remove_field(cr, 'conference.session', 'speaker')
 
-        cr.execute(
-            "UPDATE conference_session SET presenter_id = %s WHERE id = %s",
-            (partner_id, session_id),
-        )
-
-    util.remove_field(cr, 'conference.session', 'speaker')
     # duration_in_hours is now redundant: 'duration' is stored in hours directly.
-    util.remove_field(cr, 'conference.session', 'duration_in_hours')
+    if _column_exists(cr, 'conference_session', 'duration_in_hours'):
+        util.remove_field(cr, 'conference.session', 'duration_in_hours')
