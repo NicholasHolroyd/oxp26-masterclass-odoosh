@@ -18,7 +18,7 @@ def migrate(cr, version):
             partner_id = row[0]
         else:
             cr.execute(
-                "INSERT INTO res_partner (name, active, company_type) VALUES (%s, true, 'person') RETURNING id",
+                "INSERT INTO res_partner (name, active) VALUES (%s, true) RETURNING id",
                 (speaker_name,),
             )
             partner_id = cr.fetchone()[0]
