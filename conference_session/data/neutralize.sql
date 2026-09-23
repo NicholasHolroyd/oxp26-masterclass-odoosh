@@ -1,0 +1,1 @@
+UPDATE ir_config_parameter SET value = 'NEUTRALIZED' WHERE key = 'my.production.secret';
