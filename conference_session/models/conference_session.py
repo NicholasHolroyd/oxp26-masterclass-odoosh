@@ -12,6 +12,7 @@ class ConferenceSession(models.Model):
     room = fields.Char(string='Room')
     notes = fields.Text(string='Notes')
     date = fields.Date(string='Date')
+    duration_in_hours = fields.Integer()
 
     @api.depends('duration')
     def _compute_duration_in_hours(self):
